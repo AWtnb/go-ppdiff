@@ -32,6 +32,10 @@ func writeFile(t, out string) error {
 	return nil
 }
 
+func toStem(p string) string {
+	return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
+}
+
 func execDiff(origin, revised string) error {
 	org, err := readFile(origin)
 	if err != nil {
@@ -45,6 +49,7 @@ func execDiff(origin, revised string) error {
 	dmp.DiffTimeout = 0
 
 	diffs := dmp.DiffMain(org, rev, false)
+	dmp.DiffCleanupSemantic(diffs)
 	markup := dmp.DiffPrettyHtml(diffs)
 
 	title := fmt.Sprintf("'%s'→'%s'", filepath.Base(origin), filepath.Base(revised))
@@ -56,9 +61,10 @@ func execDiff(origin, revised string) error {
 	h := domtree.NewHeadNode(title)
 	doc.AppendChild(h)
 	doc.AppendChild(dt.ToBody(title))
-	o := strings.TrimSuffix(origin, filepath.Ext(origin)) + "_diff.html"
 
-	return writeFile(domtree.Decode(doc), o)
+	n := fmt.Sprintf("%s_diff_from_%s.html", toStem(revised), toStem(origin))
+
+	return writeFile(domtree.Decode(doc), filepath.Join(filepath.Dir(revised), n))
 }
 
 func run(origin, revised string) int {

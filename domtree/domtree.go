@@ -62,11 +62,11 @@ func (dt *DomTree) setTabIndex() {
 	dfs(dt.root)
 }
 
-func (dt *DomTree) ToBody(title string) *html.Node {
+func (dt *DomTree) ToBody(heading string) *html.Node {
 	dt.cleanStyle()
 	dt.setTabIndex()
 	b := newElementNode("body", atom.Body)
-	h1 := newH1Node(title)
+	h1 := newH1Node(heading)
 	b.AppendChild(h1)
 	b.AppendChild(dt.root)
 	return b
