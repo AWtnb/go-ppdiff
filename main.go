@@ -65,7 +65,7 @@ func execDiff(origin, revised, out string) error {
 	dmp.DiffTimeout = 0
 
 	diffs := dmp.DiffMain(org, rev, false)
-	dmp.DiffCleanupSemantic(diffs)
+	dmp.DiffCleanupSemanticLossless(diffs)
 	markup := dmp.DiffPrettyHtml(diffs)
 
 	title := fmt.Sprintf("'%s'→'%s'", filepath.Base(origin), filepath.Base(revised))
