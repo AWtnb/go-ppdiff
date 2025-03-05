@@ -27,12 +27,20 @@ import (
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
+func toLineFeed(s string) string {
+	c := "\n"
+	return strings.NewReplacer(
+		"\r\n", c,
+		"\r", c,
+	).Replace(s)
+}
+
 func readFile(src string) (string, error) {
 	b, err := os.ReadFile(src)
 	if err != nil {
 		return "", err
 	}
-	return string(b), nil
+	return toLineFeed(string(b)), nil
 }
 
 func writeFile(t, out string) error {
