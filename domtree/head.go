@@ -31,12 +31,6 @@ del {
   color: #929292;
 }
 
-ins:focus, del:focus {
-  outline: .25em solid orange;
-  opacity: 0.9;
-  border-radius: 2px;
-}
-
 br {
   display: block;
   content: "";
