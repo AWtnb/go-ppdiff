@@ -44,6 +44,21 @@ func (dt *DomTree) cleanStyle() {
 	dfs(dt.root)
 }
 
+func (dt *DomTree) inertDel() {
+	var dfs func(*html.Node)
+	dfs = func(node *html.Node) {
+		if node.Type == html.ElementNode && node.FirstChild != nil {
+			if node.Data == "del" {
+				appendAttr(node, "inert", "")
+			}
+		}
+		for c := node.FirstChild; c != nil; c = c.NextSibling {
+			dfs(c)
+		}
+	}
+	dfs(dt.root)
+}
+
 func (dt *DomTree) setTabIndex() {
 	idx := 1
 	var dfs func(*html.Node)
@@ -63,6 +78,7 @@ func (dt *DomTree) setTabIndex() {
 }
 
 func (dt *DomTree) ToBody(heading string) *html.Node {
+	dt.inertDel()
 	dt.cleanStyle()
 	dt.setTabIndex()
 	b := newElementNode("body", atom.Body)
