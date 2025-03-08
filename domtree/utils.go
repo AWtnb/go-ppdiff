@@ -2,7 +2,6 @@ package domtree
 
 import (
 	"bytes"
-	"strings"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -77,5 +76,5 @@ func Decode(node *html.Node) string {
 	var buf bytes.Buffer
 	buf.WriteString("<!DOCTYPE html>")
 	html.Render(&buf, node)
-	return strings.ReplaceAll(buf.String(), "\u00B6", "\u21B5")
+	return buf.String()
 }

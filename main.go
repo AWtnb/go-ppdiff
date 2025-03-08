@@ -74,12 +74,11 @@ func execDiff(origin, revised, out string) error {
 
 	diffs := dmp.DiffMain(org, rev, false)
 	dmp.DiffCleanupSemanticLossless(diffs)
-	markup := dmp.DiffPrettyHtml(diffs)
 
 	title := fmt.Sprintf("'%s'→'%s'", filepath.Base(origin), filepath.Base(revised))
 
 	var dt domtree.DomTree
-	dt.Init(markup)
+	dt.Init(diffs)
 
 	doc := domtree.NewHtmlNode("ja")
 	h := domtree.NewHeadNode(title)

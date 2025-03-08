@@ -31,10 +31,9 @@ del {
   color: #929292;
 }
 
-br {
-  display: block;
-  content: "";
-  margin: 0.5em 0;
+.break::after {
+  content: "\21B5";
+  color: #929292;
 }
 `
 

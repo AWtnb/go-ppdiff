@@ -1,18 +1,48 @@
 package domtree
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
+
+// https://github.com/sergi/go-diff/blob/5b0b94c5c0d3d261e044521f7f46479ef869cf76/diffmatchpatch/diff.go#L1119
+func toHtml(diffs []diffmatchpatch.Diff) string {
+	var buff bytes.Buffer
+	i := 1
+	br := `<span class="break"></span><br>`
+	for _, diff := range diffs {
+		text := strings.Replace(html.EscapeString(diff.Text), "\n", br, -1)
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			_, _ = buff.WriteString(fmt.Sprintf("<ins tabindex=\"%d\">", i))
+			_, _ = buff.WriteString(text)
+			_, _ = buff.WriteString("</ins>")
+			i += 1
+		case diffmatchpatch.DiffDelete:
+			_, _ = buff.WriteString(fmt.Sprintf("<del inert tabindex=\"%d\">", i))
+			_, _ = buff.WriteString(text)
+			_, _ = buff.WriteString("</del>")
+			i += 1
+		case diffmatchpatch.DiffEqual:
+			_, _ = buff.WriteString("<span>")
+			_, _ = buff.WriteString(text)
+			_, _ = buff.WriteString("</span>")
+		}
+	}
+	return buff.String()
+}
 
 type DomTree struct {
 	root *html.Node
 }
 
-func (dt *DomTree) Init(markup string) error {
+func (dt *DomTree) Init(diffs []diffmatchpatch.Diff) error {
+	markup := toHtml(diffs)
 	nodes, err := html.ParseFragment(strings.NewReader(markup), newDivNode())
 	if err != nil {
 		return err
@@ -29,58 +59,7 @@ func (dt *DomTree) Init(markup string) error {
 	return nil
 }
 
-func (dt *DomTree) cleanStyle() {
-	var dfs func(*html.Node)
-	dfs = func(node *html.Node) {
-		if node.Type == html.ElementNode && node.FirstChild != nil {
-			if node.Data == "ins" || node.Data == "del" {
-				removeAttr(node, "style")
-			}
-		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			dfs(c)
-		}
-	}
-	dfs(dt.root)
-}
-
-func (dt *DomTree) inertDel() {
-	var dfs func(*html.Node)
-	dfs = func(node *html.Node) {
-		if node.Type == html.ElementNode && node.FirstChild != nil {
-			if node.Data == "del" {
-				appendAttr(node, "inert", "")
-			}
-		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			dfs(c)
-		}
-	}
-	dfs(dt.root)
-}
-
-func (dt *DomTree) setTabIndex() {
-	idx := 1
-	var dfs func(*html.Node)
-	dfs = func(node *html.Node) {
-		if node.Type == html.ElementNode && node.FirstChild != nil {
-			if node.Data == "ins" || node.Data == "del" {
-				removeAttr(node, "style")
-				appendAttr(node, "tabindex", fmt.Sprint(idx))
-				idx += 1
-			}
-		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			dfs(c)
-		}
-	}
-	dfs(dt.root)
-}
-
 func (dt *DomTree) ToBody(heading string) *html.Node {
-	dt.inertDel()
-	dt.cleanStyle()
-	dt.setTabIndex()
 	b := newElementNode("body", atom.Body)
 	h1 := newH1Node(heading)
 	b.AppendChild(h1)
