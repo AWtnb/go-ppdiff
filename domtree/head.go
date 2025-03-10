@@ -29,11 +29,7 @@ del {
   background: #a4e5ff;
   border: 1px solid #05374b;
   color: #929292;
-}
-
-.break::after {
-  content: "\21B5";
-  color: #929292;
+  user-select: none;
 }
 `
 

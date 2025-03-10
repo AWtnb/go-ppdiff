@@ -14,7 +14,7 @@ import (
 func toHtml(diffs []diffmatchpatch.Diff) string {
 	var buff bytes.Buffer
 	i := 1
-	br := `<span class="break"></span><br>`
+	br := `<span inert style="color: #929292">&crarr;</span><br>`
 	for _, diff := range diffs {
 		text := strings.Replace(html.EscapeString(diff.Text), "\n", br, -1)
 		switch diff.Type {
@@ -24,7 +24,7 @@ func toHtml(diffs []diffmatchpatch.Diff) string {
 			_, _ = buff.WriteString("</ins>")
 			i += 1
 		case diffmatchpatch.DiffDelete:
-			_, _ = buff.WriteString(fmt.Sprintf("<del inert tabindex=\"%d\">", i))
+			_, _ = buff.WriteString(fmt.Sprintf("<del tabindex=\"%d\">", i))
 			_, _ = buff.WriteString(text)
 			_, _ = buff.WriteString("</del>")
 			i += 1
