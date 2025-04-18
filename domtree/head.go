@@ -36,6 +36,7 @@ del {
   border: 1px solid #05374b;
   color: #929292;
   user-select: none;
+}
 `
 
 func getHeadMarkup(title string) string {
