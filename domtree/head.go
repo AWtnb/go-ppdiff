@@ -21,8 +21,14 @@ const css = `
 ins {
   border-radius: 4px;
   background: #ffbebe;
-  border: 1px solid tomato;
+  border: 2px solid tomato;
   text-decoration: none;
+}
+
+del+ins {
+  border-style: dashed;
+  border-width: 1px;
+  border-radius: 0 4px 4px 0;
 }
 
 del {
@@ -30,7 +36,6 @@ del {
   border: 1px solid #05374b;
   color: #929292;
   user-select: none;
-}
 `
 
 func getHeadMarkup(title string) string {
